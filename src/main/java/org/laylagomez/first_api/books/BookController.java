@@ -13,8 +13,8 @@ import java.util.Optional;
 public class BookController {
     private final BookRepository bookRepository;
 
-    public BookController() {
-        this.bookRepository= new InMemoryBookRepository();
+    public BookController(BookRepository bookRepository) {
+        this.bookRepository= bookRepository;
     }
 
     @GetMapping
@@ -33,18 +33,31 @@ public class BookController {
     }
 
     @PostMapping
-    public Book createBook(@RequestBody Book book) {
-        //comprobar que no exista el isbn return (Bad_request)
-
-        bookRepository.save(book);
-        return book;
+    public ResponseEntity<Book> createBook(@RequestBody Book book) {
+        Optional<Book> optionalBook = bookRepository.save(book);
+        if (optionalBook.isPresent()){
+            return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{isbn}")
-    public void deleteBookByIsbn(@PathVariable String isbn){
-        // si no existe retnornaar un 404
-        // si se ha borrado un ok
-        bookRepository.deleteByIsbn(isbn);
+    public ResponseEntity<Book> deleteBookByIsbn(@PathVariable String isbn){
+        Optional<Book> optionalBook = bookRepository.deleteByIsbn(isbn);
+        if (optionalBook.isPresent()){
+            return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    }
+
+    @PutMapping("/{isbn}")
+    public ResponseEntity<Book> updateBook(@PathVariable String isbn, @RequestBody Book updatedBook){
+        Optional<Book> optionalBook = bookRepository.updateBookByIsbn(isbn, updatedBook);
+        if (optionalBook.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(optionalBook.get(), HttpStatus.OK);
     }
 
 }

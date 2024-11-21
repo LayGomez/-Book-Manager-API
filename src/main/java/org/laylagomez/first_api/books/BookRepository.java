@@ -8,7 +8,9 @@ public interface BookRepository {
 
     Optional<Book> findByIsbn(String isbn);
 
-    void save(Book book);
+    Optional<Book> save(Book book);
 
-    void deleteByIsbn(String isbn);
+    Optional<Book> deleteByIsbn(String isbn);
+
+    Optional<Book> updateBookByIsbn(String isbn,  Book updatedBook);
 }
