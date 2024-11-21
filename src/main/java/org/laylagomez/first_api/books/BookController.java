@@ -32,5 +32,19 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PostMapping
+    public Book createBook(@RequestBody Book book) {
+        //comprobar que no exista el isbn return (Bad_request)
+
+        bookRepository.save(book);
+        return book;
+    }
+
+    @DeleteMapping("/{isbn}")
+    public void deleteBookByIsbn(@PathVariable String isbn){
+        // si no existe retnornaar un 404
+        // si se ha borrado un ok
+        bookRepository.deleteByIsbn(isbn);
+    }
 
 }
